@@ -3,12 +3,12 @@ import { connectToDatabase } from "../../../lib/db";
 import { UserCredentials } from "../../../types/user";
 import bcrypt from "bcrypt";
 
-const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
+const saltRounds = Number(process.env.SALT_ROUNDS);
 const mongoCollection: string | undefined = process.env.MONGODB_COLLECTION;
 
 const registerUser = async (
   req: NextApiRequest,
-  res: NextApiResponse<UserCredentials | string>
+  res: NextApiResponse<UserCredentials | { msg: string }>
 ) => {
   const { db } = await connectToDatabase();
   const { email, password }: UserCredentials = await req.body;
@@ -16,15 +16,16 @@ const registerUser = async (
     const isEmailInUse = await db
       .collection(mongoCollection)
       .findOne({ email });
-    if (isEmailInUse) return res.status(400).send("Email already exists");
+    if (isEmailInUse)
+      return res.status(400).json({ msg: "Email already exists" });
 
     const hashedPassword = await encryptPassword(password);
     const user = { email, password: hashedPassword };
 
     await db.collection(mongoCollection).insertOne(user);
-    res.status(200).send(user);
+    res.status(200).json(user);
   } catch (err) {
-    res.status(500).send("Server Error");
+    res.status(500).json({ msg: "Server Error" });
   }
 };
 
