@@ -7,13 +7,18 @@ const RegisterUser = () => {
     password: "",
   });
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!credentials.email || !credentials.email) {
       console.log("invalid credentials");
     } else {
-      registerUser();
-      setCredentials({ email: "", password: "" });
+      const req = await registerUser();
+      if (req.success) {
+        setCredentials({ email: "", password: "" });
+        //  TODO: add toast? with success. login user?
+      } else {
+        // TODO: add alert toast with error
+      }
     }
   };
 
@@ -25,8 +30,11 @@ const RegisterUser = () => {
         "Content-Type": "application/json",
       },
     });
-    const data: UserCredentials = await res.json();
-    console.log(data);
+    if (res.status === 200) {
+      return { success: true, msg: "User added" };
+    } else {
+      return { success: false, msg: res.statusText };
+    }
   };
 
   const handleChange = (e: FormEvent) => {
