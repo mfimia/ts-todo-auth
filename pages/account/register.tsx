@@ -1,7 +1,8 @@
+import { NextPage } from "next";
 import React, { FormEvent, useState } from "react";
 import { UserCredentials } from "../../types/user";
 
-const RegisterUser = () => {
+const RegisterUser: NextPage = () => {
   const [credentials, setCredentials] = useState<UserCredentials>({
     email: "",
     password: "",
@@ -33,7 +34,9 @@ const RegisterUser = () => {
     if (res.status === 200) {
       return { success: true, msg: "User added" };
     } else {
-      return { success: false, msg: res.statusText };
+      const data = await res.json();
+      const { msg } = data;
+      return { success: false, msg };
     }
   };
 
