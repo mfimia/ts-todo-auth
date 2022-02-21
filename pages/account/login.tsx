@@ -1,11 +1,15 @@
 import React, { FormEvent, useState } from "react";
 import { UserCredentials } from "../../types/user";
+import { useRouter } from "next/router";
+import { NextPage } from "next";
 
-const LoginUser = () => {
+const LoginUser: NextPage = () => {
   const [credentials, setCredentials] = useState<UserCredentials>({
     email: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -13,7 +17,6 @@ const LoginUser = () => {
       console.log("invalid credentials");
     } else {
       loginUser();
-      // setCredentials({ email: "", password: "" });
     }
   };
 
@@ -28,10 +31,12 @@ const LoginUser = () => {
     if (res.status === 200) {
       const data = await res.json();
       const token = data.token;
-      console.log(token);
+      localStorage.setItem("ts-todo-token", token);
+      router.push("/");
     } else {
-      const errorData = res.statusText;
-      console.log(errorData);
+      const data = await res.json();
+      // TODO: handle error data
+      console.log(data);
     }
   };
 
