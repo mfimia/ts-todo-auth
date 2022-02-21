@@ -13,6 +13,7 @@ const RegisterUser = () => {
       console.log("invalid credentials");
     } else {
       registerUser();
+      setCredentials({ email: "", password: "" });
     }
   };
 
@@ -24,7 +25,7 @@ const RegisterUser = () => {
         "Content-Type": "application/json",
       },
     });
-    const data = await res.json();
+    const data: UserCredentials = await res.json();
     console.log(data);
   };
 
@@ -35,9 +36,19 @@ const RegisterUser = () => {
 
   return (
     <div style={{ position: "absolute", top: "30%", left: "30%" }}>
-      <form onSubmit={handleSubmit}>
-        <input onChange={handleChange} name="email" type="email" />
-        <input onChange={handleChange} name="password" type="password" />
+      <form autoComplete="off" onSubmit={handleSubmit}>
+        <input
+          value={credentials.email}
+          onChange={handleChange}
+          name="email"
+          type="email"
+        />
+        <input
+          value={credentials.password}
+          onChange={handleChange}
+          name="password"
+          type="password"
+        />
         <button>Sign up</button>
       </form>
     </div>
