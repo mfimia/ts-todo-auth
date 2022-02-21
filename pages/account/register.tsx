@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { UserCredentials } from "../../types/user";
 
-const Register = () => {
+const RegisterUser = () => {
   const [credentials, setCredentials] = useState<UserCredentials>({
     email: "",
     password: "",
@@ -44,4 +44,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterUser;
