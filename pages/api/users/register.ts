@@ -1,21 +1,18 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../../lib/db";
-
-type Data = {
-  name: string;
-};
+import { UserCredentials } from "../../../types/user";
 
 const registerUser = async (
-  _: NextApiRequest,
-  res: NextApiResponse<Data | string>
+  req: NextApiRequest,
+  res: NextApiResponse<UserCredentials | string>
 ) => {
   const { db } = await connectToDatabase();
+  const { email, password }: UserCredentials = await req.body;
   try {
-    const users = await db.collection("users").find({}).toArray();
-    res.status(200).send(users);
+    const user = { email, password };
+    await db.collection("users").insertOne(user);
+    res.status(200).send(user);
   } catch (err) {
-    console.log(err);
     res.status(500).send("Server Error");
   }
 };
