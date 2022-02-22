@@ -1,42 +1,22 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
+import { useCredentials } from "../hooks/useCredentials";
 import { useTodoList } from "../hooks/useTodoList";
 import styles from "../styles/Home.module.css";
-import { useRouter } from "next/router";
-
-let storedToken = "";
-// if window is not undefined, we are on the client. else, on the server
-if (typeof window !== "undefined")
-  storedToken = localStorage.getItem("ts-todo-token") as string;
 
 const Home: NextPage = () => {
-  const [token, setToken] = useState(storedToken);
-  const router = useRouter();
+  const { checkAuthorization, token } = useCredentials();
 
   useEffect(() => {
-    const checkAuthorization = async () => {
-      const res = await fetch("/api/users/auth", {
-        headers: {
-          "x-auth-token": token,
-        },
-      });
-      if (res.status === 200) {
-        const data = await res.json();
-        setToken(data.token);
-      } else {
-        setToken("");
-        router.push("/account/login");
-      }
-    };
-    checkAuthorization();
+    (async () => await checkAuthorization())();
   }, [token]);
 
   const {
-    handleChange,
-    handleDelete,
-    handleComplete,
-    handleSubmit,
+    handleListChange,
+    handleListDelete,
+    handleListComplete,
+    handleListSubmit,
     input,
     todoList,
   } = useTodoList();
@@ -49,10 +29,10 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <form autoComplete="off" onSubmit={handleSubmit}>
+        <form autoComplete="off" onSubmit={handleListSubmit}>
           <input
             name="todo-list"
-            onChange={handleChange}
+            onChange={handleListChange}
             value={input.text}
             type="text"
           />
@@ -69,8 +49,10 @@ const Home: NextPage = () => {
               >
                 {item.text}
               </span>
-              <button onClick={() => handleDelete(index)}>Delete</button>
-              <button onClick={() => handleComplete(index)}>Complete</button>
+              <button onClick={() => handleListDelete(index)}>Delete</button>
+              <button onClick={() => handleListComplete(index)}>
+                Complete
+              </button>
             </li>
           ))}
         </ul>
