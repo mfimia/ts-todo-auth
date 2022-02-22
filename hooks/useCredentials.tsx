@@ -1,10 +1,12 @@
 import { FormEvent, useState } from "react";
 import { AppCredentials, UserForm } from "../types/credentials";
 import { useRouter } from "next/router";
+import { isServer } from "../utils/isServer";
 
 let storedToken = "";
+const isPageOnServer = isServer();
 // if window is not undefined, we are on the client. else, on the server
-if (typeof window !== "undefined")
+if (!isPageOnServer)
   storedToken = localStorage.getItem("ts-todo-token") as string;
 
 export const useCredentials = () => {
