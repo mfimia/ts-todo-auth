@@ -1,10 +1,8 @@
 import bcrypt from "bcrypt";
 import jwt, { Secret } from "jsonwebtoken";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "../../../lib/db";
-import { UserCredentials } from "../../../types/user";
-
-const mongoCollection: string | undefined = process.env.MONGODB_COLLECTION;
+import { connectToDatabase, mongoCollection } from "../../../lib/db";
+import { UserCredentials } from "../../../types/credentials";
 
 const loginUser = async (
   req: NextApiRequest,

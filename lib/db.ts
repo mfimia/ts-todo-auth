@@ -2,6 +2,7 @@ import { Db, MongoClient, MongoClientOptions } from "mongodb";
 
 const uri: string = process.env.MONGODB_URI as string;
 const dbName: string = process.env.MONGODB_DB as string;
+export const mongoCollection: string = process.env.MONGODB_COLLECTION as string;
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;

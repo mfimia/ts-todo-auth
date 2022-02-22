@@ -1,10 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { connectToDatabase } from "../../../lib/db";
-import { UserCredentials } from "../../../types/user";
 import bcrypt from "bcrypt";
+import type { NextApiRequest, NextApiResponse } from "next";
+import { connectToDatabase, mongoCollection } from "../../../lib/db";
+import { UserCredentials } from "../../../types/credentials";
 
 const saltRounds = Number(process.env.SALT_ROUNDS);
-const mongoCollection: string | undefined = process.env.MONGODB_COLLECTION;
 
 const registerUser = async (
   req: NextApiRequest,
