@@ -1,62 +1,21 @@
 import { NextPage } from "next";
-import React, { FormEvent, useState } from "react";
-import { UserCredentials } from "../../types/user";
+import { useCredentials } from "../../hooks/useCredentials";
 
 const RegisterUser: NextPage = () => {
-  const [credentials, setCredentials] = useState<UserCredentials>({
-    email: "",
-    password: "",
-  });
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!credentials.email || !credentials.email) {
-      console.log("invalid credentials");
-    } else {
-      const req = await registerUser();
-      if (req.success) {
-        setCredentials({ email: "", password: "" });
-        //  TODO: add toast? with success. login user?
-      } else {
-        // TODO: add alert toast with error
-      }
-    }
-  };
-
-  const registerUser = async () => {
-    const res = await fetch("/api/users/register", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.status === 200) {
-      return { success: true, msg: "User added" };
-    } else {
-      const data = await res.json();
-      const { msg } = data;
-      return { success: false, msg };
-    }
-  };
-
-  const handleChange = (e: FormEvent) => {
-    const { value, name } = e.target as HTMLInputElement;
-    setCredentials((prev) => ({ ...prev, [name]: value }));
-  };
+  const { credentials, handleChange, handleSubmit } = useCredentials();
 
   return (
     <div style={{ position: "absolute", top: "30%", left: "30%" }}>
-      <form autoComplete="off" onSubmit={handleSubmit}>
+      <form autoComplete="off" onSubmit={(e) => handleSubmit(e, "register")}>
         <input
-          value={credentials.email}
-          onChange={handleChange}
+          value={credentials.register.email}
+          onChange={(e) => handleChange(e, "register")}
           name="email"
           type="email"
         />
         <input
-          value={credentials.password}
-          onChange={handleChange}
+          value={credentials.register.password}
+          onChange={(e) => handleChange(e, "register")}
           name="password"
           type="password"
         />
