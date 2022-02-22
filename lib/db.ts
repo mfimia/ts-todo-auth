@@ -1,10 +1,10 @@
-import { MongoClient } from "mongodb";
+import { Db, MongoClient, MongoClientOptions } from "mongodb";
 
 const uri: string = process.env.MONGODB_URI as string;
 const dbName: string = process.env.MONGODB_DB as string;
 
-let cachedClient: any = null;
-let cachedDb: any = null;
+let cachedClient: MongoClient | null = null;
+let cachedDb: Db | null = null;
 
 if (!uri) {
   throw new Error(
@@ -23,12 +23,14 @@ export const connectToDatabase = async () => {
     return { client: cachedClient, db: cachedDb };
   }
 
-  const client: any = await MongoClient.connect(uri, {
+  const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  } as any);
+  } as MongoClientOptions);
 
-  const db = await client.db(dbName);
+  await client.connect();
+
+  const db: Db = await client.db(dbName);
 
   cachedClient = client;
   cachedDb = db;
