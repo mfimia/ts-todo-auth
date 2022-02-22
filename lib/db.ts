@@ -31,7 +31,7 @@ export const connectToDatabase = async () => {
 
   await client.connect();
 
-  const db: Db = await client.db(dbName);
+  const db: Db = client.db(dbName);
 
   cachedClient = client;
   cachedDb = db;
