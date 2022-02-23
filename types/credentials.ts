@@ -9,3 +9,5 @@ export interface AppCredentials {
 }
 
 export type UserForm = "login" | "register";
+
+export type EmailsList = { email: UserCredentials["email"] }[];
