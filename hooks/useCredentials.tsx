@@ -3,14 +3,18 @@ import { AppCredentials, UserForm } from "../types/credentials";
 import { useRouter } from "next/router";
 import { isServer } from "../utils/isServer";
 
-let storedToken = "";
-const isPageOnServer = isServer();
-// if window is not undefined, we are on the client. else, on the server
-if (!isPageOnServer)
-  storedToken = localStorage.getItem("ts-todo-token") as string;
-
 export const useCredentials = () => {
-  const [token, setToken] = useState(storedToken);
+  const getToken = () => {
+    const isPageOnServer = isServer();
+    // if window is not undefined, we are on the client. else, on the server
+    if (!isPageOnServer) {
+      const tokenString = sessionStorage.getItem("ts-todo-token") as string;
+      const userToken = JSON.parse(tokenString);
+      return userToken;
+    }
+  };
+
+  const [token, setToken] = useState(getToken());
   const [credentials, setCredentials] = useState<AppCredentials>({
     login: {
       email: "",
@@ -23,6 +27,12 @@ export const useCredentials = () => {
   });
 
   const router = useRouter();
+  const { pathname } = router;
+
+  const storeToken = (userToken: string) => {
+    sessionStorage.setItem("ts-todo-token", JSON.stringify(userToken));
+    setToken(userToken);
+  };
 
   const handleChange = (e: FormEvent, form: UserForm) => {
     const { value, name } = e.target as HTMLInputElement;
@@ -56,6 +66,9 @@ export const useCredentials = () => {
     }
   };
 
+  const redirectFromLogin = () =>
+    pathname === "/account/login" ? router.push("/") : router.reload();
+
   const loginUser = async (form: UserForm) => {
     const res = await fetch("/api/users/login", {
       method: "POST",
@@ -64,13 +77,12 @@ export const useCredentials = () => {
         "Content-Type": "application/json",
       },
     });
+    const data = await res.json();
     if (res.status === 200) {
-      const data = await res.json();
       const token = data.token;
-      localStorage.setItem("ts-todo-token", token);
-      router.push("/");
+      storeToken(token);
+      redirectFromLogin();
     } else {
-      const data = await res.json();
       // TODO: handle error data
       console.log(data);
     }
@@ -111,6 +123,7 @@ export const useCredentials = () => {
   return {
     credentials,
     token,
+    storeToken,
     handleChange,
     handleSubmit,
     checkAuthorization,
