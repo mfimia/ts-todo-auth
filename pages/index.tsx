@@ -1,17 +1,11 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import { Fragment, useEffect } from "react";
-import { useCredentials } from "../hooks/useCredentials";
+import { Fragment } from "react";
+import withAuth from "../components/withAuth";
 import { useTodoList } from "../hooks/useTodoList";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
-  const { checkAuthorization, token } = useCredentials();
-
-  useEffect(() => {
-    (async () => await checkAuthorization())();
-  }, [token]);
-
   const {
     handleListChange,
     handleListDelete,
@@ -61,4 +55,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default withAuth(Home);
